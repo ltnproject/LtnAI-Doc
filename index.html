@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LtnAI — Enable Virtualization</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #111520;
+    --surface2: #161c2d;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --border: rgba(0,229,255,0.12);
+    --glow: rgba(0,229,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glowing orbs */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse 8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  .orb2 {
+    position: fixed;
+    bottom: -150px;
+    left: -150px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse 10s ease-in-out infinite reverse;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 56px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0,229,255,0.4);
+  }
+
+  .logo-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .doc-badge {
+    margin-left: auto;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Hero */
+  .hero {
+    margin-bottom: 52px;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .doc-type {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .doc-type::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 18px;
+    color: #fff;
+  }
+
+  h1 span {
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* Info bar */
+  .info-bar {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .info-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Steps */
+  .steps-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .step:nth-child(1) { animation-delay: 0.25s; }
+  .step:nth-child(2) { animation-delay: 0.35s; }
+  .step:nth-child(3) { animation-delay: 0.45s; }
+  .step:nth-child(4) { animation-delay: 0.55s; }
+  .step:nth-child(5) { animation-delay: 0.65s; }
+
+  .step:hover {
+    border-color: rgba(0,229,255,0.3);
+    box-shadow: 0 0 30px rgba(0,229,255,0.08);
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(0,229,255,0.25);
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .step-body {
+    padding: 0 24px 22px 76px;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.75;
+  }
+
+  .step-body p { margin-bottom: 10px; }
+  .step-body p:last-child { margin-bottom: 0; }
+
+  /* Code block */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 12px;
+    color: var(--accent);
+    margin: 12px 0;
+    position: relative;
+    overflow-x: auto;
+  }
+
+  .code-block .comment { color: #4a5568; }
+  .code-block .keyword { color: #a78bfa; }
+  .code-block .value { color: var(--accent3); }
+
+  /* Alert box */
+  .alert {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .alert-warn {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    color: #fbbf24;
+  }
+
+  .alert-info {
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.15);
+    color: #7dd3fc;
+  }
+
+  .alert-icon { flex-shrink: 0; font-size: 14px; }
+
+  /* Tag chips */
+  .chip {
+    display: inline-block;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    margin: 2px;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 48px 0;
+  }
+
+  /* Footer CTA */
+  .footer-cta {
+    text-align: center;
+    padding: 48px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.7s ease 0.75s both;
+  }
+
+  .footer-cta::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 150px;
+    background: radial-gradient(ellipse, rgba(0,229,255,0.12), transparent 70%);
+    pointer-events: none;
+  }
+
+  .checkmark-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(124,58,237,0.15));
+    border: 2px solid rgba(0,229,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 28px;
+    animation: spinOnce 0.8s ease 1s both;
+  }
+
+  @keyframes spinOnce {
+    from { transform: rotate(-180deg) scale(0); opacity: 0; }
+    to { transform: rotate(0) scale(1); opacity: 1; }
+  }
+
+  .footer-cta h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .footer-cta p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 460px;
+    margin: 0 auto 28px;
+  }
+
+  .footer-cta p strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 30px rgba(0,229,255,0.25);
+  }
+
+  .btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 50px rgba(0,229,255,0.4);
+  }
+
+  .btn-back:active { transform: translateY(0); }
+
+  .btn-arrow { font-size: 18px; transition: transform 0.2s; }
+  .btn-back:hover .btn-arrow { transform: translateX(-4px); }
+
+  /* Progress bar decoration */
+  .progress-strip {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease 0.15s both;
+  }
+
+  .progress-strip span {
+    height: 3px;
+    flex: 1;
+    border-radius: 99px;
+    background: var(--border);
+  }
+
+  .progress-strip span.done {
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+  }
+
+</style>
+</head>
+<body>
+<div class="orb2"></div>
+
+<div class="container">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">L</div>
+      <span class="logo-name">LtnAI</span>
+    </div>
+    <span class="doc-badge">Guide</span>
+  </header>
+
+  <div class="hero">
+    <div class="doc-type">Setup Documentation</div>
+    <h1>How to Enable<br><span>Virtualization</span></h1>
+    <p class="subtitle">
+      Follow these steps to enable hardware virtualization on your system — required for running virtual machines, emulators, and AI sandbox environments.
+    </p>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><span class="dot"></span> Difficulty: Beginner</div>
+    <div class="info-item"><span class="dot"></span> Time: ~5 minutes</div>
+    <div class="info-item"><span class="dot"></span> Requires: BIOS/UEFI Access</div>
+    <div class="info-item"><span class="dot"></span> OS: Windows / Linux</div>
+  </div>
+
+  <div class="progress-strip">
+    <span class="done"></span>
+    <span class="done"></span>
+    <span class="done"></span>
+    <span class="done"></span>
+    <span class="done"></span>
+  </div>
+
+  <div class="steps-wrapper">
+
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-title">Check if Virtualization is Already Enabled</div>
+      </div>
+      <div class="step-body">
+        <p>Before entering BIOS, check if virtualization is already active on Windows:</p>
+        <div class="code-block">
+          <span class="comment"># Press Ctrl + Shift + Esc → Performance tab</span><br>
+          <span class="keyword">Task Manager</span> → <span class="value">Performance</span> → <span class="value">CPU</span><br>
+          <span class="comment"># Look for "Virtualization: Enabled" at the bottom</span>
+        </div>
+        <p>If it shows <span class="chip">Enabled</span>, you're all set and can skip to the end. If it shows <span class="chip">Disabled</span>, continue to the next step.</p>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-title">Restart and Enter BIOS / UEFI Settings</div>
+      </div>
+      <div class="step-body">
+        <p>Restart your computer. As it boots, repeatedly press the BIOS key for your manufacturer:</p>
+        <p>
+          <span class="chip">F2</span> Dell / ASUS / Acer &nbsp;
+          <span class="chip">F10</span> HP &nbsp;
+          <span class="chip">F1 / F2</span> Lenovo &nbsp;
+          <span class="chip">Del</span> MSI / Gigabyte
+        </p>
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠</span>
+          <span>You must press the key before Windows begins loading. The window is only about 1–2 seconds. If you miss it, restart and try again.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-title">Find the Virtualization Setting</div>
+      </div>
+      <div class="step-body">
+        <p>Inside BIOS/UEFI, navigate using your keyboard. The virtualization option is typically found under one of these menus:</p>
+        <p>
+          <span class="chip">Advanced</span> &nbsp;
+          <span class="chip">CPU Configuration</span> &nbsp;
+          <span class="chip">System Security</span> &nbsp;
+          <span class="chip">M.I.T.</span>
+        </p>
+        <p>Look for an option labeled:</p>
+        <div class="code-block">
+          <span class="value">Intel Virtualization Technology (VT-x)</span><br>
+          <span class="comment">— or —</span><br>
+          <span class="value">AMD-V / SVM Mode</span>
+        </div>
+        <div class="alert alert-info">
+          <span class="alert-icon">ℹ</span>
+          <span>The exact name and location varies by motherboard. Use the BIOS search function if available (usually F9 or a magnifier icon).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-title">Enable Virtualization and Save</div>
+      </div>
+      <div class="step-body">
+        <p>Select the virtualization option and change its value to <span class="chip">Enabled</span>. Then save your changes and exit:</p>
+        <div class="code-block">
+          <span class="comment"># Save and exit shortcut</span><br>
+          Press <span class="keyword">F10</span> → Confirm with <span class="value">Yes / Enter</span>
+        </div>
+        <p>Your computer will reboot automatically. Let it boot normally back into Windows or your OS.</p>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">5</div>
+        <div class="step-title">Verify Virtualization is Now Enabled</div>
+      </div>
+      <div class="step-body">
+        <p>After booting back in, verify the change worked:</p>
+        <div class="code-block">
+          <span class="keyword">Task Manager</span> → <span class="value">Performance</span> → <span class="value">CPU</span><br>
+          <span class="comment"># "Virtualization: Enabled" should now appear</span>
+        </div>
+        <p>Alternatively, on Windows you can run in Command Prompt:</p>
+        <div class="code-block">
+          <span class="keyword">systeminfo</span> | findstr <span class="value">"Hyper-V Requirements"</span><br>
+          <span class="comment"># Should show: VM Monitor Mode Extensions: Yes</span>
+        </div>
+        <p>If virtualization is confirmed enabled, this step is complete. 🎉</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Footer CTA -->
+  <div class="footer-cta">
+    <div class="checkmark-ring">✓</div>
+    <h2>You're All Done!</h2>
+    <p>
+      Virtualization has been successfully enabled on your system. 
+      <strong>You may go back to the video and continue to the next step.</strong>
+    </p>
+    <button class="btn-back" onclick="history.back()">
+      <span class="btn-arrow">←</span>
+      Back to Video
+    </button>
+  </div>
+
+</div>
+</body>
+</html>
